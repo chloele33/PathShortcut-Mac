@@ -9,7 +9,7 @@ from _codecs import decode
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QPropertyAnimation
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from iconButton import IconButton
@@ -161,8 +161,8 @@ class ShortPath(QWidget):
             #curPath=str(self.leftList.item(index).text()).decode('utf-8','ignore')
             curPath=str(self.leftList.item(index).text())
             if curPath:listItems.append(curPath+"\n")
-        curx, _, _, _ = self.geometry().getCoords()
-        listItems.append(str(curx))
+        _, cury, _, _ = self.geometry().getCoords()
+        listItems.append(str(cury))
         with open("pathes.txt","w") as pathFile:
             pathFile.writelines(listItems)
     def itemClickedFunc(self):
@@ -209,29 +209,31 @@ class ShortPath(QWidget):
                     #self.initpathes=[item.decode('utf-8','ignore')[:-1] for item in pathlist[:-1]]
                     self.initpathes=[item[:-1] for item in pathlist[:-1]]
                     self.leftList.addItems(self.initpathes)
-                    horx=pathlist[-1]
+                    verx=pathlist[-1]
                 else:
                     self.initpathes=[]
-                    horx=""
+                    verx=""
         else:
             self.initpathes=[]
-            horx=""
-        if horx:
-            self.move(int(horx),0)
+            verx=""
+        if verx:
+            self.move(0, int(verx))
         else:
-            screenWidth=QDesktopWidget().screenGeometry().width()
-            winWidth=self.geometry().width()
-            self.move((screenWidth-winWidth)/2,0)
+            screenHeight=QDesktopWidget().screenGeometry().height()
+            winHeight=self.geometry().height()
+            self.move(0, (screenHeight-winHeight)/2)
     def enterEvent(self,event):
         self.posObjs()
-        if self.cursory<6:
-            self.winOut(0.3,1.0,320,-508,510)
+        if self.cursorx<6:
+            self.winOut(0.3,1.0,320,-412,510)
     def leaveEvent(self,event):
         self.posObjs()
-        if self.y==0:
-            self.winIn(1.0,0.3,320,-508)
-    def winOut(self,startOpacity,endOpacity,aniTime,startPos,widgetHeight):
-        opacity_anim = QPropertyAnimation(self, "windowOpacity")
+        if self.x <= 0:
+            self.winIn(1.0,0.3,320,-412)
+    def winOut(self,startOpacity,endOpacity,aniTime,startPos,widgetWidth):
+        tempArray = QByteArray()
+        tempArray.append("windowOpacity")
+        opacity_anim = QPropertyAnimation(self, tempArray)
         opacity_anim.setStartValue(startOpacity)
         opacity_anim.setEndValue(endOpacity)
         opacity_anim.setDuration(aniTime)
@@ -239,9 +241,11 @@ class ShortPath(QWidget):
         opacity_anim_curve.setType(QEasingCurve.OutQuad)
         opacity_anim.setEasingCurve(opacity_anim_curve)
  
-        size_anim = QPropertyAnimation(self, "geometry")
-        size_start = QRect(self.x, startPos, self.winWidth, 0)
-        size_end   = QRect(self.x, 0, self.winWidth, widgetHeight)
+        tempArray2 = QByteArray()
+        tempArray2.append("geometry")
+        size_anim = QPropertyAnimation(self, tempArray2)
+        size_start = QRect(startPos, self.y, 0, self.winHeight)
+        size_end   = QRect(0, self.y, widgetWidth, self.winHeight)
         size_anim.setStartValue(size_start)
         size_anim.setEndValue(size_end)
         size_anim.setDuration(aniTime)
@@ -258,7 +262,9 @@ class ShortPath(QWidget):
         self._animation.addAnimation(size_anim)
         self._animation.finished.connect(self._animation.clear)
     def winIn(self,startOpacity,endOpacity,aniTime,endPos):
-        opacity_anim = QPropertyAnimation(self, "windowOpacity")
+        tempArray=QByteArray()
+        tempArray.append("windowOpacity")
+        opacity_anim = QPropertyAnimation(self, tempArray)
         opacity_anim.setStartValue(startOpacity)
         opacity_anim.setEndValue(endOpacity)
         opacity_anim.setDuration(aniTime)
@@ -266,9 +272,11 @@ class ShortPath(QWidget):
         opacity_anim_curve.setType(QEasingCurve.OutQuad)
         opacity_anim.setEasingCurve(opacity_anim_curve)
 
-        size_anim = QPropertyAnimation(self, "geometry")
+        tempArray2=QByteArray()
+        tempArray2.append("geometry")
+        size_anim = QPropertyAnimation(self, tempArray2)
         size_start = QRect(self.x, self.y, self.winWidth, self.winHeight)
-        size_end   = QRect(self.x, endPos, self.winWidth, self.winHeight)
+        size_end   = QRect(endPos, self.y, self.winWidth, self.winHeight)
         size_anim.setStartValue(size_start)
         size_anim.setEndValue(size_end)
         size_anim.setDuration(aniTime)      
@@ -299,7 +307,10 @@ class ShortPath(QWidget):
         if event.key()==Qt.Key_Escape:
             self.closeButtonFunc()
     def closeButtonFunc(self):
-        opacity_anim = QPropertyAnimation(self, "windowOpacity")
+        tempArray=QByteArray()
+        tempArray.append("windowOpacity")
+        opacity_anim = QPropertyAnimation(self, tempArray)
+        #opacity_anim.setTargetObject()
         opacity_anim.setStartValue(1.0)
         opacity_anim.setEndValue(0.0)
         opacity_anim.setDuration(620)
@@ -312,7 +323,9 @@ class ShortPath(QWidget):
         self.winHeight=size.height()
         self.x, self.y, _, _ = size.getCoords()
         
-        size_anim = QPropertyAnimation(self, "geometry")
+        tempArray2=QByteArray()
+        tempArray2.append("geometry")
+        size_anim = QPropertyAnimation(self, tempArray2)
         size_start = QRect(self.x, self.y, self.winWidth, self.winHeight)
         size_end   = QRect(self.x, self.y, self.winWidth, 0.0)
         size_anim.setStartValue(size_start)
