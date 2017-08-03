@@ -18,14 +18,14 @@ class ShortPath(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowFlags(Qt.FramelessWindowHint|Qt.WindowStaysOnTopHint)
-        self.setFixedSize(QSize(420,510))
+        self.setFixedSize(QSize(420,700))
         # Create title widgets
         titleWidget=QWidget()
         titleWidget.setObjectName("titleWidget")
         titleWidget.setFixedHeight(45)
-        titleBtn=QPushButton(icon=QIcon("./icons/system.png"))
+        titleBtn=QPushButton(icon=QIcon("./icons/pathShortcutIcon.png"))
         titleBtn.setFlat(True)
-        titleBtn.setIconSize(QSize(42,42))
+        titleBtn.setIconSize(QSize(35, 35))
         titleLabel=QLabel("Short Path Tool")
         titleLabel.setFont(QFont("",10,QFont.Bold))
         titleLabel.setStyleSheet("color:rgb(230,231,232)")
@@ -33,6 +33,7 @@ class ShortPath(QWidget):
         helpBtn=IconButton('./icons/help.png','./icons/help_hover.png')
         helpBtn.setIconSize(QSize(18,18))
         closeButton=IconButton('./icons/close.png','./icons/close_hover.png')
+        closeButton.setIconSize(QSize(18, 18))
         titleLayout=QHBoxLayout()
         titleLayout.addWidget(titleBtn)
         titleLayout.addWidget(titleLabel)
@@ -143,7 +144,6 @@ class ShortPath(QWidget):
         currentPath=QFileDialog.getExistingDirectory(directory ="/Users",
                                                      caption="Please select a path",
                                                      options = QFileDialog.ShowDirsOnly)
-        print(currentPath)
         curPath=str(currentPath)
         if curPath:self.leftList.addItem(curPath)
     def removeBtnFunc(self):
@@ -225,7 +225,7 @@ class ShortPath(QWidget):
     def enterEvent(self,event):
         self.posObjs()
         if self.cursorx<6:
-            self.winOut(0.3,1.0,320,-412,510)
+            self.winOut(0.3,1.0,320,-412,420)
     def leaveEvent(self,event):
         self.posObjs()
         if self.x <= 0:
@@ -327,7 +327,7 @@ class ShortPath(QWidget):
         tempArray2.append("geometry")
         size_anim = QPropertyAnimation(self, tempArray2)
         size_start = QRect(self.x, self.y, self.winWidth, self.winHeight)
-        size_end   = QRect(self.x, self.y, self.winWidth, 0.0)
+        size_end   = QRect(self.x, self.y, 0, self.winHeight)
         size_anim.setStartValue(size_start)
         size_anim.setEndValue(size_end)
         size_anim.setDuration(620)      
