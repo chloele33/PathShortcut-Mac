@@ -23,11 +23,14 @@ class ShortPath(QWidget):
         titleWidget=QWidget()
         titleWidget.setObjectName("titleWidget")
         titleWidget.setFixedHeight(45)
-        titleBtn=QPushButton(icon=QIcon("./icons/pathShortcutIcon.png"))
-        titleBtn.setFlat(True)
-        titleBtn.setIconSize(QSize(35, 35))
-        titleLabel=QLabel("Short Path Tool")
-        titleLabel.setFont(QFont("",10,QFont.Bold))
+#         titleBtn=QPushButton(icon=QIcon("./icons/pathShortcutIcon.png"))
+#         titleBtn.setFlat(True)
+#         titleBtn.setIconSize(QSize(35, 35))
+        titleBtn=QLabel()
+        titleBtn.setStyleSheet("image:url('./icons/pathShortcutIcon.png');")
+        titleBtn.setFixedSize(QSize(35, 35))
+        titleLabel=QLabel("Path Shortcut Tool")
+        titleLabel.setFont(QFont("",12,QFont.Bold))
         titleLabel.setStyleSheet("color:rgb(230,231,232)")
         titleSpacer=QSpacerItem(20,20,QSizePolicy.Expanding,QSizePolicy.Minimum)
         helpBtn=IconButton('./icons/help.png','./icons/help_hover.png')
@@ -55,19 +58,19 @@ class ShortPath(QWidget):
         # Create bottom widgets
         self.addBtn=QPushButton("Add Path")
         self.addBtn.setObjectName("nolineBtn")
-        self.addBtn.setFixedHeight(23)
+        self.addBtn.setFixedHeight(28)
         self.removeBtn=QPushButton("Remove Path")
         self.removeBtn.setObjectName("nolineBtn")
-        self.removeBtn.setFixedHeight(23)
+        self.removeBtn.setFixedHeight(28)
         self.saveBtn=QPushButton("Save")
         self.saveBtn.setObjectName("nolineBtn")
-        self.saveBtn.setFixedHeight(23)
+        self.saveBtn.setFixedHeight(28)
         # Create layouts
         botLayout=QHBoxLayout()
         botLayout.addWidget(self.addBtn)
         botLayout.addWidget(self.removeBtn)
         botLayout.addWidget(self.saveBtn)
-        botLayout.setContentsMargins(5, 0, 4, 0)
+        botLayout.setContentsMargins(5, 5, 4, 5)
         botLayout.setSpacing(3)
         centWidget=QMainWindow()
         centSplitter=QSplitter()
@@ -76,6 +79,7 @@ class ShortPath(QWidget):
         centSplitter.addWidget(self.rightList)
         centSplitter.setStretchFactor(0,4)
         centSplitter.setStretchFactor(1,2)
+        centSplitter.setContentsMargins(5, 5, 6, 0)
         mainLayout=QVBoxLayout()
         mainLayout.addWidget(titleWidget)
         mainLayout.addWidget(centWidget)
@@ -119,9 +123,10 @@ class ShortPath(QWidget):
                 color:rgb(214, 219, 221);
                 border:2px groove rgb(40, 42, 44);
                 border-radius:10px;
-                padding:5px 5px;}    
+                padding:5px 5px;
+                font-size:12px;}    
         QPushButton#nolineBtn:hover{
-                color : rgb(80, 208, 63);}
+                color : rgb(208, 208, 100);}
             
         QPushButton#nolineBtn:pressed{
                 background : qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(40, 42, 44), stop:1 rgb(11, 12, 13));
@@ -139,7 +144,8 @@ class ShortPath(QWidget):
         self.leftList.doubleClicked.connect(self.doubleClickedFunc)
         self.rightList.doubleClicked.connect(self.doubleClickedFunc)
     def helpBtnFunc(self):
-        os.open("help.txt")
+        opener ="open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, "help.txt"])
     def addBtnFunc(self):
         currentPath=QFileDialog.getExistingDirectory(directory ="/Users",
                                                      caption="Please select a path",
